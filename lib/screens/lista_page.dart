@@ -1,7 +1,9 @@
+import 'formulario_page.dart';
 import 'package:flutter/material.dart';
 import '../models/jogo.dart';
 import '../widgets/estado_vazio.dart';
 import '../widgets/jogo_card.dart';
+import 'detalhe_page.dart';
 
 /// Tela principal: mostra a coleção de jogos.
 /// Estado da coleção fica aqui (em memória) durante o M1.
@@ -52,16 +54,57 @@ class _ListaPageState extends State<ListaPage> {
     ),
   ];
 
-  void _abrirDetalhe(Jogo jogo) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Abrir detalhes: ${jogo.titulo}')),
+      void _abrirDetalhe(Jogo jogo) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => DetalhePage(
+          jogo: jogo,
+          onEditar: () {
+            Navigator.of(context).pop();
+            _abrirEdicao(jogo);
+          },
+        ),
+      ),
     );
   }
 
-  void _abrirFormulario() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Abrir formulário (em breve)')),
+   Future<void> _abrirFormulario() async {
+    final resultado = await Navigator.of(context).push<Jogo>(
+      MaterialPageRoute(
+        builder: (_) => const FormularioPage(),
+      ),
     );
+
+    if (resultado != null) {
+      setState(() {
+        _jogos.add(resultado);
+      });
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('"${resultado.titulo}" adicionado!')),
+      );
+    }
+  }
+
+  Future<void> _abrirEdicao(Jogo jogo) async {
+    final resultado = await Navigator.of(context).push<Jogo>(
+      MaterialPageRoute(
+        builder: (_) => FormularioPage(jogo: jogo),
+      ),
+    );
+
+    if (resultado != null) {
+      setState(() {
+        final index = _jogos.indexWhere((j) => j.id == resultado.id);
+        if (index != -1) {
+          _jogos[index] = resultado;
+        }
+      });
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('"${resultado.titulo}" atualizado!')),
+      );
+    }
   }
 
   @override
