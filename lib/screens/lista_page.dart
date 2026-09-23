@@ -120,15 +120,44 @@ class _ListaPageState extends State<ListaPage> {
               textoBotao: 'Adicionar jogo',
               onAcao: _abrirFormulario,
             )
-          : ListView.separated(
-              padding: const EdgeInsets.all(12),
-              itemCount: _jogos.length,
-              separatorBuilder: (_, _) => const SizedBox(height: 8),
-              itemBuilder: (context, index) {
-                final jogo = _jogos[index];
-                return JogoCard(
-                  jogo: jogo,
-                  onTap: () => _abrirDetalhe(jogo),
+          : LayoutBuilder(
+              builder: (context, constraints) {
+                // Em telas largas (>= 600dp), usa 2 colunas.
+                // Em telas estreitas, mantém 1 coluna.
+                final bool telaLarga = constraints.maxWidth >= 600;
+
+                if (telaLarga) {
+                  return GridView.builder(
+                    padding: const EdgeInsets.all(12),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 8,
+                      crossAxisSpacing: 8,
+                      mainAxisExtent: 116,
+                    ),
+                    itemCount: _jogos.length,
+                    itemBuilder: (context, index) {
+                      final jogo = _jogos[index];
+                      return JogoCard(
+                        jogo: jogo,
+                        onTap: () => _abrirDetalhe(jogo),
+                      );
+                    },
+                  );
+                }
+
+                return ListView.separated(
+                  padding: const EdgeInsets.all(12),
+                  itemCount: _jogos.length,
+                  separatorBuilder: (_, _) => const SizedBox(height: 8),
+                  itemBuilder: (context, index) {
+                    final jogo = _jogos[index];
+                    return JogoCard(
+                      jogo: jogo,
+                      onTap: () => _abrirDetalhe(jogo),
+                    );
+                  },
                 );
               },
             ),
@@ -141,4 +170,4 @@ class _ListaPageState extends State<ListaPage> {
             ),
     );
   }
-}
+  }
