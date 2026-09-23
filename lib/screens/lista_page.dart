@@ -15,7 +15,7 @@ class ListaPage extends StatefulWidget {
 }
 
 class _ListaPageState extends State<ListaPage> {
-  final List<Jogo> _jogos = [
+    final List<Jogo> _jogos = [
     const Jogo(
       id: '1',
       titulo: 'The Legend of Zelda: Majoras Mask',
